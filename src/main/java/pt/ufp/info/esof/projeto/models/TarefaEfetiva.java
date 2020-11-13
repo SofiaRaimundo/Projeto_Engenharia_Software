@@ -2,13 +2,12 @@ package pt.ufp.info.esof.projeto.models;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import javax.persistence.*;
 
 @Getter
 @Setter
 @Entity
-public class TarefaEfetiva {
+public abstract class TarefaEfetiva {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +21,4 @@ public class TarefaEfetiva {
 
   @Column(name="Tempo_trabalhado")
   public int tempo_trabalhado;
-
 }

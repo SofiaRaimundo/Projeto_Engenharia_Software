@@ -15,15 +15,8 @@ public class Cliente extends Pessoa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //id_client (para a base de dados)
 
-    //!!!!!!perguntar se elas concordam!!!!!!!!
-    @Column(name = "nome")
-    private String nome;
-
     //esta relação cria a tabela cliente_projetos com cliente_id e projetos_id
     @OneToMany(cascade = CascadeType.ALL)
     private List<Projeto> projetos = new ArrayList<>(); //array list de projetos do cliente
 
-    public Cliente(String nome) {
-        super(nome);
-    }
 }
