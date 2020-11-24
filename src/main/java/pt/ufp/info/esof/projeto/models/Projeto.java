@@ -24,7 +24,7 @@ public class Projeto {
 
   //esta relação cria a tabela projeto_tarefas com projeto_id e tarefas_id
   @OneToMany(cascade = CascadeType.ALL)
-  private List<TarefaPrevista> tarefas = new ArrayList<>(); //array list de tarefas do projeto
+  private List<Tarefa> tarefas = new ArrayList<>(); //array list de tarefas do projeto
 
   /**
    * Função que permite mostrar o estado do projeto
@@ -33,9 +33,9 @@ public class Projeto {
     float count = 0;
 
     //para cada tarefa efetiva do arraylist
-    for (TarefaPrevista tp: tarefas) {
+    for (Tarefa t: tarefas) {
        //conta o progresso de cada tarefa e armazena em count
-      count = count + tp.getProgresso();
+      count = count + t.getProgresso();
     }
 
     float progress = count * 100; //para ficar em percentagem
@@ -55,8 +55,8 @@ public class Projeto {
     float valor = 0;
 
     //ciclo foreach para cada tarefa
-    for (TarefaPrevista tp: tarefas) {
-      valor = valor + (tp.getTempo_trabalhado() * tp.getEmpregado().getValor_hora());
+    for (Tarefa t: tarefas) {
+      valor = valor + (t.getTempoTrabalho() * t.getEmpregado().getValor_hora());
     }
 
     return valor; //retorna o valor final do projeto
@@ -70,8 +70,8 @@ public class Projeto {
     float orc = 0;
 
     //ciclo foreach para cada tarefa
-    for (TarefaPrevista tp: tarefas) {
-      orc = orc + (tp.getTempo_previsto() * tp.getEmpregado().getValor_hora());
+    for (Tarefa t: tarefas) {
+      orc = orc + (t.getTempoPrevisto() * t.getEmpregado().getValor_hora());
     }
 
     return orc; //retorna o orçamento do projeto

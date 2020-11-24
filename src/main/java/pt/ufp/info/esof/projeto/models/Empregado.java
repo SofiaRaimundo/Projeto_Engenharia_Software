@@ -24,12 +24,6 @@ public class Empregado extends Pessoa {
 
   //esta relação cria a tabela empregado_tarefas com empregado_id e tarefas_id
   @OneToMany(cascade = CascadeType.ALL)
-  private List<TarefaPrevista> tarefas = new ArrayList<>(); //array list de tarefas do empregado
-
-  public void registaTempoExecucao(TarefaEfetiva t) {
-  }
-
-  public void registaConclusaoTarefa(TarefaEfetiva t) {
-  }
+  private List<Tarefa> tarefas = new ArrayList<>(); //array list de tarefas do empregado
 
 }
