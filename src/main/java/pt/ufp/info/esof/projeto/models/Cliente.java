@@ -18,5 +18,4 @@ public class Cliente extends Pessoa {
     //esta relação cria a tabela cliente_projetos com cliente_id e projetos_id
     @OneToMany(cascade = CascadeType.ALL)
     private List<Projeto> projetos = new ArrayList<>(); //array list de projetos do cliente
-
 }

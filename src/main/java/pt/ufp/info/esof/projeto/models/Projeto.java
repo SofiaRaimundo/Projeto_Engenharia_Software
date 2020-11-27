@@ -18,24 +18,24 @@ public class Projeto {
   @Column(name="nome")
   private String nome;
 
-  //relacao gestor-projeto gera uma coluna na tabela projeto (coluna gestor_projeto_id)
-  @OneToOne(cascade = CascadeType.ALL)
-  private GestorProjeto gestorProjeto;
-
   //esta relação cria a tabela projeto_tarefas com projeto_id e tarefas_id
   @OneToMany(cascade = CascadeType.ALL)
-  private List<Tarefa> tarefas = new ArrayList<>(); //array list de tarefas do projeto
+  private List<TarefaPrevista> tarefasPrevistas = new ArrayList<>(); //array list de tarefas previstas do projeto
 
   /**
    * Função que permite mostrar o estado do projeto
+   * @return - retorna o estado do projeto
    */
   public float mostraEstadoProjeto() {
     float count = 0;
 
-    //para cada tarefa efetiva do arraylist
-    for (Tarefa t: tarefas) {
-       //conta o progresso de cada tarefa e armazena em count
-      count = count + t.getProgresso();
+    //para cada tarefa prevista do arraylist
+    for (TarefaPrevista tp: tarefasPrevistas) {
+      //para cada tarefa efetiva de cada tarefa prevista do projeto, armazena o progresso de cada tarefa efetiva
+      for(TarefaEfetiva te: tp.getTarefasEfetivas()) {
+        //conta o progresso de cada tarefa efetiva e armazena em count
+        count = count + te.getProgresso();
+      }
     }
 
     float progress = count * 100; //para ficar em percentagem
@@ -44,37 +44,33 @@ public class Projeto {
   }
 
   /**
-   * Função que permite mostrar o valor final do projeto
+   * Função que permite mostrar o custo do projeto
+   * @return - retorna o custo do projeto
    */
-  public float mostraValorFinalProjeto() {
-    //ciclo a percorrer as tarefas previstas
-    //nas tarefas conseguimos chegar ao empregado para chegar ao valor-hora
-    //nas tarefas conseguimos chegar ao tempo-trabalhado
-    //conta = valor: tempo_trabalhado * valor_hora
+  public float mostraCustoProjeto() {
+    float custo = 0;
 
-    float valor = 0;
-
-    //ciclo foreach para cada tarefa
-    for (Tarefa t: tarefas) {
-      valor = valor + (t.getTempoTrabalho() * t.getEmpregado().getValor_hora());
+    //ciclo foreach para cada tarefa prevista, armazena o custo da tarefa prevista
+    for (TarefaPrevista tp : tarefasPrevistas) {
+      custo = custo + tp.mostraCustoTarefaP();
     }
 
-    return valor; //retorna o valor final do projeto
+    return custo; //retorna o custo do projeto
   }
 
   /**
-   * Função que retorna o orçamento do projeto
-   * @return - orçamento
+   * Função que permite mostrar o tempo previsto que demora um projeto
+   * @return - retorna o tempo
    */
-  public float orcamentoProjeto() {
-    float orc = 0;
+  public float mostraTempoProjeto() {
+    float tempo = 0;
 
-    //ciclo foreach para cada tarefa
-    for (Tarefa t: tarefas) {
-      orc = orc + (t.getTempoPrevisto() * t.getEmpregado().getValor_hora());
+    //para cada tarefa prevista, armazena o tempo previsto
+    for (TarefaPrevista tp : tarefasPrevistas) {
+      tempo = tempo + tp.getTempoPrevisto();
     }
 
-    return orc; //retorna o orçamento do projeto
+    return tempo; //retorna o tempo previsto
   }
 
 }
