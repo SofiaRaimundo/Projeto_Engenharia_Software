@@ -8,25 +8,26 @@ import java.util.*;
 @Getter
 @Setter
 @Entity
+@Table(name = "tarefa_prevista")
 public class TarefaPrevista {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; //id da tarefa prevista para a base de dados
 
-    @Column(name = "tempo previsto")
-    private float tempoPrevisto;
+    @Column(name = "tempo_previsto")
+    private float tempoPrevisto; //tempo previsto para a realização da tarefa
 
     @Column(name = "nome")
-    private String nome;
+    private String nome; //nome da tarefa
 
-    @Column(name = "projeto")
-    private Projeto projeto;
+    @ManyToOne
+    private Projeto projeto; //projeto ao qual pertence a tarefa
 
-    @Column(name = "empregado")
-    private Empregado empregado;
+    @ManyToOne
+    private Empregado empregado; //empregado que vai realizar a tarefa
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela tarefa_prevista_tarefas_efetivas com tarefa_prevista_id e tarefas_efetivas_id
     private List<TarefaEfetiva> tarefasEfetivas = new ArrayList<>(); //arraylist de tarefas efetivas, para guardar o tempo trabalhado em cada dia
 
     /**

@@ -9,13 +9,13 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Table(name = "cliente")
 public class Cliente extends Pessoa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; //id_client (para a base de dados)
+    private Long id; //id do cliente para a base de dados
 
-    //esta relação cria a tabela cliente_projetos com cliente_id e projetos_id
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Projeto> projetos = new ArrayList<>(); //array list de projetos do cliente
+    @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela cliente_projetos com cliente_id e projetos_id
+    private List<Projeto> projetos = new ArrayList<>(); //projetos do cliente
 }

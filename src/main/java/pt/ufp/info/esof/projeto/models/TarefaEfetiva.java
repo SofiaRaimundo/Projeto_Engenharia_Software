@@ -11,16 +11,19 @@ public class TarefaEfetiva {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; //id da tarefa para a base de dados
 
     @Column(name = "nome")
-    private String nome;
+    private String nome; //nome da tarefa
 
     @Column(name = "progresso")
-    private float progresso;
+    private float progresso; //progresso da tarefa
 
-    @Column(name = "tempo trabalhado")
-    private float tempoTrabalhado;
+    @Column(name = "tempo_trabalhado")
+    private float tempoTrabalhado; //tempo trabalhado na tarefa
+
+    @ManyToOne
+    private TarefaPrevista tarefaPrevista; //tarefa prevista à qual pertence esta tarefa efetiva
 
     /**
      * Função para registar a conclusao de uma tarefa

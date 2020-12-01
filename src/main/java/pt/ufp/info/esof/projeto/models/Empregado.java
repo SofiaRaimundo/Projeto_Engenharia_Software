@@ -6,21 +6,22 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Getter
 @Setter
 @Entity
+@Table(name = "empregado")
 public class Empregado extends Pessoa {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long id; //id do empregado para a base de dados
 
   @Column(name = "cargo")
   private Cargo cargo;
 
-  //esta relação cria a tabela empregado_tarefaprevista com empregado_id e tarefa_prevista_id
-  @OneToMany(cascade = CascadeType.ALL)
-  private List<TarefaPrevista> tarefasPrevistas = new ArrayList<>(); //array list de tarefas previstas do empregado
+  @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela empregado_tarefas_previstas com empregado_id e tarefas_previstas_id
+  private List<TarefaPrevista> tarefasPrevistas = new ArrayList<>(); //tarefas previstas do empregado
 
   /**
    * Método para atribuir o salário a um empregado mediante o seu cargo

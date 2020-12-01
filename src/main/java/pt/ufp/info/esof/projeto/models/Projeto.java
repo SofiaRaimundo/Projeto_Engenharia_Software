@@ -3,24 +3,26 @@ package pt.ufp.info.esof.projeto.models;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "projeto")
 public class Projeto {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long id; //id do projeto para a base de dados
 
-  @Column(name="nome")
-  private String nome;
+  @Column(name = "nome")
+  private String nome; //nome do projeto
 
-  //esta relação cria a tabela projeto_tarefas com projeto_id e tarefas_id
-  @OneToMany(cascade = CascadeType.ALL)
-  private List<TarefaPrevista> tarefasPrevistas = new ArrayList<>(); //array list de tarefas previstas do projeto
+  @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela projeto_tarefas_previstas com projeto_id e tarefas_previstas_id
+  private List<TarefaPrevista> tarefasPrevistas = new ArrayList<>(); //tarefas previstas do projeto
+
+  @ManyToOne
+  private Cliente cliente;
 
   /**
    * Função que permite mostrar o estado do projeto
@@ -32,11 +34,12 @@ public class Projeto {
     //para cada tarefa prevista do arraylist
     for (TarefaPrevista tp: tarefasPrevistas) {
       //para cada tarefa efetiva de cada tarefa prevista do projeto, armazena o progresso de cada tarefa efetiva
-      for(TarefaEfetiva te: tp.getTarefasEfetivas()) {
+      for (TarefaEfetiva te : tp.getTarefasEfetivas()) {
         //conta o progresso de cada tarefa efetiva e armazena em count
         count = count + te.getProgresso();
       }
     }
+
 
     float progress = count * 100; //para ficar em percentagem
 
