@@ -18,4 +18,28 @@ public class Cliente extends Pessoa {
 
     @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela cliente_projetos com cliente_id e projetos_id
     private List<Projeto> projetos = new ArrayList<>(); //projetos do cliente
+
+    /**
+     * Função para adicionar um projeto à lista de projetos de um cliente.
+     * @param projeto - projeto a ser adicionado.
+     */
+    public void adicionaProjeto(Projeto projeto) {
+        //verifica se ainda não tem o projeto
+        if(!this.projetos.contains(projeto)){
+            this.projetos.add(projeto); //se não tiver adiciona à lista de projetos do cliente
+            projeto.setCliente(this); //associa o cliente ao projeto
+        }
+    }
+
+    /**
+     * Função para remover um projeto à lista de projetos de um cliente.
+     * @param projeto - projeto a ser removido.
+     */
+    public void removeProjeto(Projeto projeto) {
+        //verifica se o cliente tem o projeto
+        if(this.projetos.contains(projeto)){
+            this.projetos.remove(projeto); //se tiver remove da lista de projetos do cliente
+            projeto.setCliente(null); //desassocia o cliente do projeto
+        }
+    }
 }
