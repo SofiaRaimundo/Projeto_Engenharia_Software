@@ -27,10 +27,10 @@ public class TarefaEfetiva {
 
     /**
      * Função para registar a conclusao de uma tarefa
-     * em progresso colocar 1 => 100%
+     * em progresso colocar 100 => 100%
      */
     public void registaConclusaoTarefa(){
-        setProgresso(1);
+        setProgresso(100);
     }
 
     /**

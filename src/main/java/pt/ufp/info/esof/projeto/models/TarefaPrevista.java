@@ -31,11 +31,35 @@ public class TarefaPrevista {
     private List<TarefaEfetiva> tarefasEfetivas = new ArrayList<>(); //arraylist de tarefas efetivas, para guardar o tempo trabalhado em cada dia
 
     /**
-     * Função que permite mostrar o custo de uma tarefa
-     * @return - retorna o custo da tarefa
+     * Função que permite mostrar o custo de uma tarefa.
+     * @return - retorna o custo da tarefa.
      */
     public float mostraCustoTarefaP() {
         //o custo da tarefa depende do salário do empregado que a realiza
         return empregado.salarioValorHora();
+    }
+
+    /**
+     * Função que permite adicionar uma tarefa efetiva.
+     * @param tarefaEfetiva - tarefa a ser adicionada.
+     */
+    public void adicionaTarefaEfetiva(TarefaEfetiva tarefaEfetiva) {
+        //verifica se ainda não existe a tarefa na lista
+        if(!this.tarefasEfetivas.contains(tarefaEfetiva)) {
+            this.tarefasEfetivas.add(tarefaEfetiva); //adiciona a tarefa
+            tarefaEfetiva.setTarefaPrevista(this); //associa a tarefa prevista com a tarefa efetiva
+        }
+    }
+
+    /**
+     * Função que permite remover uma tarefa efetiva.
+     * @param tarefaEfetiva - tarefa a ser removida.
+     */
+    public void removeTarefaEfetiva(TarefaEfetiva tarefaEfetiva) {
+        //verifica se já existe a tarefa na lista
+        if(this.tarefasEfetivas.contains(tarefaEfetiva)) {
+            this.tarefasEfetivas.remove(tarefaEfetiva); //remove a tarefa
+            tarefaEfetiva.setTarefaPrevista(null); //desassocia as tarefas
+        }
     }
 }

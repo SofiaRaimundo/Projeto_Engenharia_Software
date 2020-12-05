@@ -42,4 +42,28 @@ public class Empregado extends Pessoa {
         }else
           return 80; //se for an sr recebe 80 euros/hora
   }
+
+  /**
+   * Função que permite adiconar uma tarefa a um empregado.
+   * @param tarefaPrevista - tarefa a ser adicionada.
+   */
+  public void adicionaTarefaP(TarefaPrevista tarefaPrevista) {
+    //verifica se a tarefa ainda não existe na lista
+    if(!this.tarefasPrevistas.contains(tarefaPrevista)) {
+      this.tarefasPrevistas.add(tarefaPrevista); //adiciona a tarefa
+      tarefaPrevista.setEmpregado(this); //associa o empregado à tarefa
+    }
+  }
+
+  /**
+   * Função que permite remover uma tarefa de um empregado.
+   * @param tarefaPrevista - tarefa a ser removida.
+   */
+  public void removeTarefaP(TarefaPrevista tarefaPrevista) {
+    //verifica se a tarefa existe na lista
+    if(this.tarefasPrevistas.contains(tarefaPrevista)) {
+      this.tarefasPrevistas.remove(tarefaPrevista); //remove a tarefa
+      tarefaPrevista.setEmpregado(null); //desassocia o empregado à tarefa
+    }
+  }
 }
