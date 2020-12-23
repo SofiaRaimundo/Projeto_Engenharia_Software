@@ -10,20 +10,24 @@ import pt.ufp.info.esof.projeto.repositories.*;
 @Component
 public class Inicializacao implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
+
+    private final ProjetoRepository projetoRepository;
+
+    private final EmpregadoRepository empregadoRepository;
+
+    private final TarefaEfetivaRepository tarefaEfetivaRepository;
+
+    private final TarefaPrevistaRepository tarefaPrevistaRepository;
 
     @Autowired
-    private ProjetoRepository projetoRepository;
-
-    @Autowired
-    private EmpregadoRepository empregadoRepository;
-
-    @Autowired
-    private TarefaEfetivaRepository tarefaEfetivaRepository;
-
-    @Autowired
-    private TarefaPrevistaRepository tarefaPrevistaRepository;
+    public Inicializacao(ClienteRepository clienteRepository, ProjetoRepository projetoRepository, EmpregadoRepository empregadoRepository, TarefaEfetivaRepository tarefaEfetivaRepository, TarefaPrevistaRepository tarefaPrevistaRepository) {
+        this.clienteRepository = clienteRepository;
+        this.projetoRepository = projetoRepository;
+        this.empregadoRepository = empregadoRepository;
+        this.tarefaEfetivaRepository = tarefaEfetivaRepository;
+        this.tarefaPrevistaRepository = tarefaPrevistaRepository;
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -46,6 +50,7 @@ public class Inicializacao implements ApplicationListener<ContextRefreshedEvent>
         empregado.setNome("Empregado teste");
         tarefaPrevista.setEmpregado(empregado);
         empregado.setCargo(Cargo.DEV_JR);
+        empregado.adicionaTarefaP(tarefaPrevista);
 
         TarefaEfetiva tarefaEfetiva = new TarefaEfetiva();
         tarefaEfetiva.setNome("Tarefa efetiva");
@@ -57,5 +62,6 @@ public class Inicializacao implements ApplicationListener<ContextRefreshedEvent>
         this.projetoRepository.save(projeto);
         this.empregadoRepository.save(empregado);
         this.tarefaPrevistaRepository.save(tarefaPrevista);
+        this.tarefaEfetivaRepository.save(tarefaEfetiva);
     }
 }
