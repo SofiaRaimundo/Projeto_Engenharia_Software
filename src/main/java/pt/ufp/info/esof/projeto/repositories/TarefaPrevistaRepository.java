@@ -6,9 +6,11 @@ import pt.ufp.info.esof.projeto.models.Empregado;
 import pt.ufp.info.esof.projeto.models.Projeto;
 import pt.ufp.info.esof.projeto.models.TarefaPrevista;
 
+import java.util.Optional;
+
 @Repository
 public interface TarefaPrevistaRepository extends CrudRepository<TarefaPrevista, Long> {
-    TarefaPrevista findByNome(String nome);
+    Optional<TarefaPrevista> findByNome(String nome);
 
     TarefaPrevista findByProjeto(Projeto projeto);
 

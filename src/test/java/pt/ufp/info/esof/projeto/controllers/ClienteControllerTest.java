@@ -1,6 +1,5 @@
 package pt.ufp.info.esof.projeto.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import pt.ufp.info.esof.projeto.models.Cliente;
 import pt.ufp.info.esof.projeto.models.Projeto;
-import pt.ufp.info.esof.projeto.models.TarefaPrevista;
 import pt.ufp.info.esof.projeto.repositories.ClienteRepository;
-import java.lang.reflect.Array;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -121,7 +115,7 @@ class ClienteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
 
-        //se voltar a tentar adicionar ao mesmo cliente devia dar um badrequest => perguntar ao professor!!!!
+        //se voltar a tentar adicionar ao mesmo cliente dá um badrequest
         mockMvc.perform(
                 patch("/cliente/1")
                         .content(projetoJson)

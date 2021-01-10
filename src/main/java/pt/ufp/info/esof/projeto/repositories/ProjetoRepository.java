@@ -4,7 +4,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import pt.ufp.info.esof.projeto.models.Projeto;
 
+import java.util.Optional;
+
 @Repository
 public interface ProjetoRepository extends CrudRepository<Projeto, Long> {
-    Projeto findByNome(String nome);
+    Optional<Projeto> findByNome(String nome);
 }

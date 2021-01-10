@@ -1,5 +1,6 @@
 package pt.ufp.info.esof.projeto.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.*;
 @Setter
 @Entity
 @Table(name = "tarefa_prevista")
+@EqualsAndHashCode(onlyExplicitlyIncluded =true)
 public class TarefaPrevista {
 
     @Id
@@ -19,6 +21,7 @@ public class TarefaPrevista {
     private float tempoPrevisto; //tempo previsto para a realização da tarefa
 
     @Column(name = "nome")
+    @EqualsAndHashCode.Include
     private String nome; //nome da tarefa
 
     @ManyToOne

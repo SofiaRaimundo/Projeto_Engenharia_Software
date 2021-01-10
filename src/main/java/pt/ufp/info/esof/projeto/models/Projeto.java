@@ -1,5 +1,6 @@
 package pt.ufp.info.esof.projeto.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.*;
 @Setter
 @Entity
 @Table(name = "projeto")
+@EqualsAndHashCode(onlyExplicitlyIncluded =true) //o que precisavamos para resolver o erro do cliente controller test
 public class Projeto {
 
   @Id
@@ -16,6 +18,7 @@ public class Projeto {
   private Long id; //id do projeto para a base de dados
 
   @Column(name = "nome")
+  @EqualsAndHashCode.Include //para comparar o objeto projeto pelo nome para não dar erro no cliente controller test
   private String nome; //nome do projeto
 
   @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela projeto_tarefas_previstas com projeto_id e tarefas_previstas_id
