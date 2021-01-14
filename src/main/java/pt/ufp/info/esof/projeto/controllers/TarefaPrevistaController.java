@@ -4,53 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import pt.ufp.info.esof.projeto.models.TarefaEfetiva;
+import pt.ufp.info.esof.projeto.dtos.TarefaEfetivaCreateDTO;
+import pt.ufp.info.esof.projeto.dtos.TarefaPrevistaCreateDTO;
+import pt.ufp.info.esof.projeto.dtos.TarefaPrevistaResponseDTO;
+import pt.ufp.info.esof.projeto.dtos.conversores.ConverterTarefaPrevistaParaDTO;
 import pt.ufp.info.esof.projeto.models.TarefaPrevista;
-import pt.ufp.info.esof.projeto.repositories.TarefaPrevistaRepository;
+import pt.ufp.info.esof.projeto.services.TarefaPrevistaService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/tarefaPrevista")
 public class TarefaPrevistaController {
-    private final TarefaPrevistaRepository tarefaPrevistaRepository;
+
+    private final TarefaPrevistaService tarefaPrevistaService;
+    private final ConverterTarefaPrevistaParaDTO converterTarefaPrevistaParaDTO = new ConverterTarefaPrevistaParaDTO();
 
     @Autowired
-    public TarefaPrevistaController(TarefaPrevistaRepository tarefaPrevistaRepository) {
-        this.tarefaPrevistaRepository = tarefaPrevistaRepository;
+    public TarefaPrevistaController(TarefaPrevistaService tarefaPrevistaService) {
+        this.tarefaPrevistaService = tarefaPrevistaService;
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<TarefaPrevista>> getAllTarefaPrevista() {
-        return ResponseEntity.ok(tarefaPrevistaRepository.findAll()); //retorna todas as tarefas previstas
+    public ResponseEntity<Iterable<TarefaPrevistaResponseDTO>> getAllTarefaPrevista() {
+        List<TarefaPrevistaResponseDTO> responseDTOS = new ArrayList<>();
+        tarefaPrevistaService.findAll().forEach(tarefaPrevista -> responseDTOS.add(converterTarefaPrevistaParaDTO.converter(tarefaPrevista)));
+        return ResponseEntity.ok(responseDTOS);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TarefaPrevista> getTarefaPrevistaById(@PathVariable Long id) {
-        Optional<TarefaPrevista> optionalTarefaPrevista = tarefaPrevistaRepository.findById(id);
-        return optionalTarefaPrevista.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<TarefaPrevistaResponseDTO> getTarefaPrevistaById(@PathVariable Long id) {
+        Optional<TarefaPrevista> optionalTarefaPrevista = tarefaPrevistaService.findById(id);
+        return optionalTarefaPrevista.map(tarefaPrevista -> {
+            TarefaPrevistaResponseDTO tarefaPrevistaResponseDTO = converterTarefaPrevistaParaDTO.converter(tarefaPrevista);
+            return ResponseEntity.ok(tarefaPrevistaResponseDTO);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<TarefaPrevista> criarTarefaPrevista(@RequestBody TarefaPrevista tarefaPrevista) {
-        Optional<TarefaPrevista> optionalTarefaPrevista =tarefaPrevistaRepository.findById(tarefaPrevista.getId());
-        if(optionalTarefaPrevista.isEmpty()){
-            return ResponseEntity.ok(tarefaPrevistaRepository.save(tarefaPrevista));
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<TarefaPrevistaResponseDTO> criarTarefaPrevista(@RequestBody TarefaPrevistaCreateDTO tarefaPrevista) {
+        Optional<TarefaPrevista> optionalTarefaPrevista = tarefaPrevistaService.criarTarefaPrevista(tarefaPrevista.converter());
+        return optionalTarefaPrevista.map(value -> ResponseEntity.ok(converterTarefaPrevistaParaDTO.converter(value))).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @PatchMapping("/{tarefaPrevistaId}")
-    public ResponseEntity<TarefaPrevista> adicionaTarefaEfetiva(@PathVariable Long tarefaPrevistaId, @RequestBody TarefaEfetiva tarefaEfetiva){
-        Optional<TarefaPrevista> optionalTarefaPrevista = this.tarefaPrevistaRepository.findById(tarefaPrevistaId);
-        if(optionalTarefaPrevista.isPresent()){
-            TarefaPrevista tarefaPrevista = optionalTarefaPrevista.get();
-            int quantidadeDeTarefaEAntes = tarefaPrevista.getTarefasEfetivas().size();
-            tarefaPrevista.adicionaTarefaEfetiva(tarefaEfetiva);
-            int quantidadeDeTarefaEDepois = tarefaPrevista.getTarefasEfetivas().size();
-            if(quantidadeDeTarefaEAntes != quantidadeDeTarefaEDepois) {
-                return ResponseEntity.ok(tarefaPrevista);
-            }
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<TarefaPrevistaResponseDTO> adicionaTarefaEfetiva(@PathVariable Long tarefaPrevistaId, @RequestBody TarefaEfetivaCreateDTO tarefaEfetiva){
+        Optional<TarefaPrevista> optionalTarefaPrevista = tarefaPrevistaService.adicionaTarefaEfetiva(tarefaPrevistaId, tarefaEfetiva.converter());
+        return optionalTarefaPrevista.map(tarefaPrevista -> ResponseEntity.ok(converterTarefaPrevistaParaDTO.converter(tarefaPrevista))).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 }

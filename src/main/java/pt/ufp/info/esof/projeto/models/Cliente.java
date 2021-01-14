@@ -1,10 +1,10 @@
 package pt.ufp.info.esof.projeto.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.List;
 @Setter
 @Entity
 @ToString
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "cliente")
 public class Cliente extends Pessoa {
 

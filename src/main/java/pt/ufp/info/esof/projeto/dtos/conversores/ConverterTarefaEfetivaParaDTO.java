@@ -8,9 +8,11 @@ public class ConverterTarefaEfetivaParaDTO implements Conversor<TarefaEfetivaRes
     @Override
     public TarefaEfetivaResponseDTO converter(TarefaEfetiva tarefaEfetiva) {
         TarefaEfetivaResponseDTO responseDTO = new TarefaEfetivaResponseDTO();
+
         responseDTO.setNome(tarefaEfetiva.getNome());
         responseDTO.setTempoTrabalhado(tarefaEfetiva.getTempoTrabalhado());
         responseDTO.setProgresso(tarefaEfetiva.getProgresso());
+        responseDTO.setTarefaPrevistaId(tarefaEfetiva.getTarefaPrevista().getId());
 
         return responseDTO;
     }

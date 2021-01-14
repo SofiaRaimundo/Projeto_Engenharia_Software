@@ -7,5 +7,6 @@ import java.util.List;
 
 @Data
 public class ClienteResponseDTO {
-    private List<String> projetos = new ArrayList<>();
+    private String nome;
+    private List<ProjetoCreateDTO> projetos = new ArrayList<>();
 }

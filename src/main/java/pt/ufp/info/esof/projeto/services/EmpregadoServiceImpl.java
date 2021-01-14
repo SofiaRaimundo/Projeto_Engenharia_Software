@@ -2,7 +2,6 @@ package pt.ufp.info.esof.projeto.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pt.ufp.info.esof.projeto.models.Cliente;
 import pt.ufp.info.esof.projeto.models.Empregado;
 import pt.ufp.info.esof.projeto.models.TarefaPrevista;
 import pt.ufp.info.esof.projeto.repositories.EmpregadoRepository;
@@ -40,6 +39,16 @@ public class EmpregadoServiceImpl implements EmpregadoService {
         Optional<Empregado> optionalEmpregado = empregadoRepository.findById(empregado.getId());
         if(optionalEmpregado.isEmpty()){
             empregadoRepository.save(empregado);
+            List<TarefaPrevista> tarefasPrevistas = new ArrayList<>();
+            empregado.getTarefasPrevistas().forEach(tarefaPrevista -> {
+                Optional<TarefaPrevista> optionalTarefaPrevista = tarefaPrevistaRepository.findByNome(tarefaPrevista.getNome());
+                if(optionalTarefaPrevista.isPresent()){
+                    tarefasPrevistas.add(tarefaPrevista);
+                    tarefaPrevista.setEmpregado(empregado);
+                    tarefaPrevistaRepository.save(optionalTarefaPrevista.get());
+                }
+            });
+            empregado.setTarefasPrevistas(tarefasPrevistas);
             return Optional.of(empregadoRepository.save(empregado));
         }
         return Optional.empty();
@@ -51,7 +60,7 @@ public class EmpregadoServiceImpl implements EmpregadoService {
         if(optionalEmpregado.isPresent()){
             Empregado empregado = optionalEmpregado.get();
             int quantidadeDeTarefasAntes = empregado.getTarefasPrevistas().size();
-            empregado.adicionaTarefaP(tarefaPrevista);
+            empregado.adicionaTarefaPrevista(tarefaPrevista);
             int quantidadedeTarefasDepois = empregado.getTarefasPrevistas().size();
             if(quantidadeDeTarefasAntes != quantidadedeTarefasDepois) {
                 return Optional.of(empregado);

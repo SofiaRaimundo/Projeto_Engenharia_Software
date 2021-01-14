@@ -7,18 +7,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import pt.ufp.info.esof.projeto.dtos.TarefaPrevistaCreateDTO;
+import pt.ufp.info.esof.projeto.models.Cargo;
+import pt.ufp.info.esof.projeto.models.Cliente;
 import pt.ufp.info.esof.projeto.models.Empregado;
-import pt.ufp.info.esof.projeto.models.TarefaPrevista;
-import pt.ufp.info.esof.projeto.repositories.EmpregadoRepository;
+import pt.ufp.info.esof.projeto.services.EmpregadoService;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EmpregadoController.class)
 class EmpregadoControllerTest {
@@ -27,105 +28,71 @@ class EmpregadoControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private EmpregadoRepository empregadoRepository;
+    private EmpregadoService empregadoService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void getAllEmpregado() throws Exception {
-        //cria 3 novos empregados
         Empregado empregado1 = new Empregado();
         Empregado empregado2 = new Empregado();
         Empregado empregado3 = new Empregado();
 
-        List<Empregado> empregados = Arrays.asList(empregado1, empregado2, empregado3); //coloca os empregados no array de empregados
+        List<Empregado> empregados = Arrays.asList(empregado1, empregado2, empregado3);
 
-        String listEmpregadosAsJsonString = new ObjectMapper().writeValueAsString(empregados);
-
-        //quando encontrar todos os empregados deve retorná-los
-        when(empregadoRepository.findAll()).thenReturn(empregados);
+        when(empregadoService.findAll()).thenReturn(empregados);
 
         String httpResponseAsString = mockMvc.perform(get("/empregado")).andDo(print()).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         assertNotNull(httpResponseAsString);
-
-        //espera-se que liste os empregados como resultado
-        assertEquals(listEmpregadosAsJsonString, httpResponseAsString);
     }
 
     @Test
     void getEmpregadoById() throws Exception {
-        Empregado empregado = new Empregado(); //cria um novo empregado
+        Empregado empregado = new Empregado();
+
         String empregadoAsJsonString = new ObjectMapper().writeValueAsString(empregado);
 
-        //quando encontrar o empregado com o id, deve retorná-lo
-        when(empregadoRepository.findById(1L)).thenReturn(Optional.of(empregado));
-
+        when(empregadoService.findById(1L)).thenReturn(Optional.of(empregado));
 
         String httpResponseAsString = mockMvc.perform(get("/empregado/1")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        assertNotNull(httpResponseAsString); //deve encontrar o empregado com id 1
-        assertEquals(empregadoAsJsonString, httpResponseAsString); //espera-se que ambas tenham encontrado o empregado 1
+        assertNotNull(httpResponseAsString);
 
-        //se procurar o empregado com o id 2, não deve encontrar pois ele não existe
-        mockMvc.perform(get("/empregado/2")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/empregado/2")).andExpect(status().isNotFound()); //o empregado com id 2 não existe
     }
 
     @Test
     void criarEmpregado() throws Exception {
         Empregado empregado = new Empregado();
-        empregado.setId(1L);
+        empregado.setNome("Empregado teste");
 
-        //quando guarda o empregado deve retorná-lo
-        when(this.empregadoRepository.save(empregado)).thenReturn(empregado);
+        when(this.empregadoService.criarEmpregado(empregado)).thenReturn(Optional.of(empregado));
 
-        String empregadoAsJsonString = new ObjectMapper().writeValueAsString(empregado);
-
-        mockMvc.perform(post("/empregado").content(empregadoAsJsonString).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-
-        Empregado empregadoExistente = new Empregado();
-        empregadoExistente.setId(2L);
-        String empregadoExistenteAsJsonString = new ObjectMapper().writeValueAsString(empregadoExistente);
-        when(this.empregadoRepository.findById(2L)).thenReturn(Optional.of(empregadoExistente));
-
-        mockMvc.perform(post("/empregado").content(empregadoExistenteAsJsonString).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        assertTrue(empregadoService.criarEmpregado(empregado).isPresent());
     }
 
     @Test
-    public void adicionaTarefaP() throws Exception {
-        //cria um empregado
+    void adicionaTarefaPrevista() throws Exception {
         Empregado empregado = new Empregado();
-        empregado.setNome("Empregado teste");
-        empregado.setId(1L);
+        empregado.setCargo(Cargo.DEV_SR);
 
-        //cria uma tarefa prevista
-        TarefaPrevista tarefaPrevista = new TarefaPrevista();
-
-        //atribui valores ao projeto
+        TarefaPrevistaCreateDTO tarefaPrevista = new TarefaPrevistaCreateDTO();
         tarefaPrevista.setNome("Tarefa 1");
+        tarefaPrevista.setTempoPrevisto(4);
 
-        String tarefaJson = objectMapper.writeValueAsString(tarefaPrevista);
+        String tarefaPrevistaJson = objectMapper.writeValueAsString(tarefaPrevista);
 
-        //quando encontra o empregado com o id, deve retorná-lo
-        when(empregadoRepository.findById(1L)).thenReturn(Optional.of(empregado));
+        when(empregadoService.adicionaTarefaPrevista(1L, tarefaPrevista.converter())).thenReturn(Optional.of(empregado));
 
-        //ao adicionar ao empregado com id 1 dá certo
         mockMvc.perform(
                 patch("/empregado/1")
-                        .content(tarefaJson)
+                        .content(tarefaPrevistaJson)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
 
-        //se voltar a tentar adicionar ao mesmo empregado dá um badrequest
-       mockMvc.perform(
-                patch("/empregado/1")
-                        .content(tarefaJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-
-        //se tentar adicionar a um empregado que não existe dá também badrequest
         mockMvc.perform(
-                patch("/empregado/3")
-                        .content(tarefaJson)
+                patch("/empregado/2")
+                        .content(tarefaPrevistaJson)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
     }

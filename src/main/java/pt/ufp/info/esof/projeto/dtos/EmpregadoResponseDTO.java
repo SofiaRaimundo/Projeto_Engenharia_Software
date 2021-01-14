@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class EmpregadoResponseDTO {
-    private String Name;
+    private String nome;
     private Cargo cargo;
-    private List<String> TarefasPrevistas=new ArrayList<>();
+    private List<TarefaPrevistaCreateDTO> TarefasPrevistas = new ArrayList<>();
 }

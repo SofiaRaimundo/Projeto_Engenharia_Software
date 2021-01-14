@@ -10,7 +10,7 @@ import java.util.*;
 @Setter
 @Entity
 @Table(name = "tarefa_prevista")
-@EqualsAndHashCode(onlyExplicitlyIncluded =true)
+@EqualsAndHashCode()
 public class TarefaPrevista {
 
     @Id

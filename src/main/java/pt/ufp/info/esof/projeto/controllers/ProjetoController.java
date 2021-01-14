@@ -4,53 +4,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import pt.ufp.info.esof.projeto.dtos.ClienteResponseDTO;
+import pt.ufp.info.esof.projeto.dtos.ProjetoCreateDTO;
+import pt.ufp.info.esof.projeto.dtos.ProjetoResponseDTO;
+import pt.ufp.info.esof.projeto.dtos.TarefaPrevistaCreateDTO;
+import pt.ufp.info.esof.projeto.dtos.conversores.ConverterClienteParaDTO;
+import pt.ufp.info.esof.projeto.dtos.conversores.ConverterProjetoParaDTO;
+import pt.ufp.info.esof.projeto.models.Cliente;
 import pt.ufp.info.esof.projeto.models.Projeto;
 import pt.ufp.info.esof.projeto.models.TarefaPrevista;
 import pt.ufp.info.esof.projeto.repositories.ProjetoRepository;
+import pt.ufp.info.esof.projeto.services.ClienteService;
+import pt.ufp.info.esof.projeto.services.ProjetoService;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/projeto")
 public class ProjetoController {
-    private final ProjetoRepository projetoRepository;
+
+    private final ProjetoService projetoService;
+    private final ConverterProjetoParaDTO converterProjetoParaDTO = new ConverterProjetoParaDTO();
 
     @Autowired
-    public ProjetoController(ProjetoRepository projetoRepository) {
-        this.projetoRepository = projetoRepository;
+    public ProjetoController(ProjetoService projetoService) {
+        this.projetoService = projetoService;
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<Projeto>> getAllProjeto() {
-        return ResponseEntity.ok(projetoRepository.findAll()); //retorna todos os projetos
+    public ResponseEntity<Iterable<ProjetoResponseDTO>> getAllProjeto() {
+        List<ProjetoResponseDTO> responseDTOS = new ArrayList<>();
+        projetoService.findAll().forEach(projeto -> responseDTOS.add(converterProjetoParaDTO.converter(projeto)));
+        return ResponseEntity.ok(responseDTOS);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Projeto> getProjetoById(@PathVariable Long id) {
-        Optional<Projeto> optionalProjeto = projetoRepository.findById(id);
-        return optionalProjeto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ProjetoResponseDTO> getProjetoById(@PathVariable Long id) {
+        Optional<Projeto> optionalProjeto = projetoService.findById(id);
+        return optionalProjeto.map(projeto -> {
+            ProjetoResponseDTO projetoResponseDTO = converterProjetoParaDTO.converter(projeto);
+            return ResponseEntity.ok(projetoResponseDTO);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Projeto> criarProjeto(@RequestBody Projeto projeto) {
-        Optional<Projeto> optionalProjeto = projetoRepository.findById(projeto.getId());
-        if(optionalProjeto.isEmpty()){
-            return ResponseEntity.ok(projetoRepository.save(projeto));
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ProjetoResponseDTO> criarProjeto(@RequestBody ProjetoCreateDTO projeto) {
+        Optional<Projeto> optionalProjeto = projetoService.criarProjeto(projeto.converter());
+        return optionalProjeto.map(value -> ResponseEntity.ok(converterProjetoParaDTO.converter(value))).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @PatchMapping("/{projetoId}")
-    public ResponseEntity<Projeto> adicionaTarefaPrevista(@PathVariable Long projetoId, @RequestBody TarefaPrevista tarefaPrevista){
-        Optional<Projeto> optionalProjeto = this.projetoRepository.findById(projetoId);
-        if(optionalProjeto.isPresent()){
-            Projeto projeto = optionalProjeto.get();
-            int quantidadeDeProjetosAntes = projeto.getTarefasPrevistas().size();
-            projeto.adicionaTarefaPrevista(tarefaPrevista);
-            int quantidadeDeProjetosDepois = projeto.getTarefasPrevistas().size();
-            if(quantidadeDeProjetosAntes != quantidadeDeProjetosDepois) {
-                return ResponseEntity.ok(projeto);
-            }
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ProjetoResponseDTO> adicionaTarefaPrevista(@PathVariable Long projetoId, @RequestBody TarefaPrevistaCreateDTO tarefaPrevista){
+        Optional<Projeto> optionalProjeto = projetoService.adicionaTarefaPrevista(projetoId, tarefaPrevista.converter());
+        return optionalProjeto.map(projeto -> ResponseEntity.ok(converterProjetoParaDTO.converter(projeto))).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 }

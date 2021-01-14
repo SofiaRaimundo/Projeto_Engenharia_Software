@@ -50,7 +50,7 @@ public class Inicializacao implements ApplicationListener<ContextRefreshedEvent>
         empregado.setNome("Empregado teste");
         tarefaPrevista.setEmpregado(empregado);
         empregado.setCargo(Cargo.DEV_JR);
-        empregado.adicionaTarefaP(tarefaPrevista);
+        empregado.adicionaTarefaPrevista(tarefaPrevista);
 
         TarefaEfetiva tarefaEfetiva = new TarefaEfetiva();
         tarefaEfetiva.setNome("Tarefa efetiva");

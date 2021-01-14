@@ -1,5 +1,11 @@
-package pt.ufp.info.esof.projeto.design_patterns;
+package pt.ufp.info.esof.projeto.design_patterns.builder;
 
+import lombok.Getter;
+import lombok.Setter;
+import pt.ufp.info.esof.projeto.models.TarefaEfetiva;
+
+@Getter
+@Setter
 public class TarefaEfetivaBuilder {
 
     private TarefaEfetiva tarefaEfetiva;
@@ -19,7 +25,7 @@ public class TarefaEfetivaBuilder {
     }
 
     public TarefaEfetivaBuilder setTempoTrabalhado(float tempoTrabalhado){
-        this.tarefaEfetiva.setTempo_trabalhado(tempoTrabalhado);
+        this.tarefaEfetiva.setTempoTrabalhado(tempoTrabalhado);
         return this;
     }
 

@@ -7,16 +7,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import pt.ufp.info.esof.projeto.dtos.ProjetoCreateDTO;
 import pt.ufp.info.esof.projeto.models.Cliente;
-import pt.ufp.info.esof.projeto.models.Projeto;
-import pt.ufp.info.esof.projeto.repositories.ClienteRepository;
+import pt.ufp.info.esof.projeto.services.ClienteService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,104 +26,69 @@ class ClienteControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void getAllCliente() throws Exception {
-        //cria 3 novos clientes
         Cliente cliente1 = new Cliente();
         Cliente cliente2 = new Cliente();
         Cliente cliente3 = new Cliente();
 
-        List<Cliente> clientes = Arrays.asList(cliente1, cliente2, cliente3); //coloca os clientes no array de clientes
+        List<Cliente> clientes = Arrays.asList(cliente1, cliente2, cliente3);
 
-        String listClientesAsJsonString = new ObjectMapper().writeValueAsString(clientes);
-
-        //quando encontrar todos os clientes deve retorná-los
-        when(clienteRepository.findAll()).thenReturn(clientes);
+        when(clienteService.findAll()).thenReturn(clientes);
 
         String httpResponseAsString = mockMvc.perform(get("/cliente")).andDo(print()).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         assertNotNull(httpResponseAsString);
-
-        //espera-se que liste os clientes como resultado
-        assertEquals(listClientesAsJsonString, httpResponseAsString);
     }
 
     @Test
     void getClienteById() throws Exception {
-        Cliente cliente = new Cliente(); //cria um novo cliente
+        Cliente cliente = new Cliente();
+
         String clienteAsJsonString = new ObjectMapper().writeValueAsString(cliente);
 
-        //quando encontrar o cliente com o id, deve retorná-lo
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-
+        when(clienteService.findById(1L)).thenReturn(Optional.of(cliente));
 
         String httpResponseAsString = mockMvc.perform(get("/cliente/1")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        assertNotNull(httpResponseAsString); //deve encontrar o cliente com id 1
-        assertEquals(clienteAsJsonString, httpResponseAsString); //espera-se que ambas tenham encontrado o cliente 1
+        assertNotNull(httpResponseAsString);
 
-        //se procurar o cliente com o id 2, não deve encontrar pois ele não existe
-        mockMvc.perform(get("/cliente/2")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/cliente/2")).andExpect(status().isNotFound()); //o cliente com id 2 não existe
     }
 
     @Test
     void criarCliente() throws Exception {
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setNome("Cliente teste");
 
-        //quando guarda o cliente deve retorná-lo
-        when(this.clienteRepository.save(cliente)).thenReturn(cliente);
+        when(this.clienteService.criarCliente(cliente)).thenReturn(Optional.of(cliente));
 
-        String clienteAsJsonString = new ObjectMapper().writeValueAsString(cliente);
-
-        mockMvc.perform(post("/cliente").content(clienteAsJsonString).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-
-        Cliente clienteExistente = new Cliente();
-        clienteExistente.setId(2L);
-        String clienteExistenteAsJsonString = new ObjectMapper().writeValueAsString(clienteExistente);
-        when(this.clienteRepository.findById(2L)).thenReturn(Optional.of(clienteExistente));
-
-        mockMvc.perform(post("/cliente").content(clienteExistenteAsJsonString).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        assertTrue(clienteService.criarCliente(cliente).isPresent());
     }
 
     @Test
     public void adicionaProjeto() throws Exception {
-        //cria um cliente
         Cliente cliente = new Cliente();
-        cliente.setNome("Cliente teste");
-        cliente.setId(1L);
+        cliente.setNome("Cliente 1");
 
-        //cria um projeto
-        Projeto projeto = new Projeto();
+        ProjetoCreateDTO projetoDTO = new ProjetoCreateDTO();
+        projetoDTO.setNome("Projeto 1");
 
-        //atribui valores ao projeto
-        projeto.setNome("Projeto teste");
+        String projetoJson = objectMapper.writeValueAsString(projetoDTO);
 
-        String projetoJson = objectMapper.writeValueAsString(projeto);
+        when(clienteService.adicionaProjeto(1L, projetoDTO.converter())).thenReturn(Optional.of(cliente));
 
-        //quando encontra o cliente com o id, deve retorná-lo
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-
-        //ao adicionar ao cliente com id 1 dá certo
         mockMvc.perform(
                 patch("/cliente/1")
                         .content(projetoJson)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
 
-        //se voltar a tentar adicionar ao mesmo cliente dá um badrequest
         mockMvc.perform(
-                patch("/cliente/1")
-                        .content(projetoJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-
-        //se tentar adicionar a um cliente que não existe dá também badrequest
-        mockMvc.perform(
-                patch("/cliente/3")
+                patch("/cliente/2")
                         .content(projetoJson)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());

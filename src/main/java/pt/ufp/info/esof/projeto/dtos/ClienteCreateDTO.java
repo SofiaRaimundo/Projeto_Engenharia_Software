@@ -8,11 +8,14 @@ import java.util.stream.Collectors;
 
 @Data
 public class ClienteCreateDTO implements CreateDTO<Cliente> {
+
+    private String nome;
     private List<ProjetoCreateDTO> projetos = new ArrayList<>(); //lista de projetos do cliente
 
     @Override
     public Cliente converter() {
         Cliente cliente=new Cliente();
+        cliente.setNome(this.getNome());
         cliente.setProjetos(projetos.stream().map(ProjetoCreateDTO::converter).collect(Collectors.toList()));
         return cliente;
     }

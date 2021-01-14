@@ -35,7 +35,7 @@ class TarefaPrevistaRepositoryTest {
         Empregado empregado = new Empregado();
         empregado.setNome("Empregado 1");
         empregado.setCargo(Cargo.DEV_JR);
-        empregado.adicionaTarefaP(tarefaPrevista);
+        empregado.adicionaTarefaPrevista(tarefaPrevista);
         tarefaPrevista.setEmpregado(empregado);
 
         assertEquals(0, tarefaPrevistaRepository.count());

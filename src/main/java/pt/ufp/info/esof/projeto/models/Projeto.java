@@ -9,8 +9,8 @@ import java.util.*;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode()
 @Table(name = "projeto")
-@EqualsAndHashCode(onlyExplicitlyIncluded =true) //o que precisavamos para resolver o erro do cliente controller test
 public class Projeto {
 
   @Id
@@ -24,6 +24,7 @@ public class Projeto {
   @OneToMany(cascade = CascadeType.ALL) //esta relação cria a tabela projeto_tarefas_previstas com projeto_id e tarefas_previstas_id
   private List<TarefaPrevista> tarefasPrevistas = new ArrayList<>(); //tarefas previstas do projeto
 
+  @EqualsAndHashCode.Exclude
   @ManyToOne
   private Cliente cliente;
 

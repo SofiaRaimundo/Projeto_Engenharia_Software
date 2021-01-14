@@ -1,5 +1,6 @@
 package pt.ufp.info.esof.projeto.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode()
 public class TarefaEfetiva {
 
     @Id
@@ -14,6 +16,7 @@ public class TarefaEfetiva {
     private Long id; //id da tarefa para a base de dados
 
     @Column(name = "nome")
+    @EqualsAndHashCode.Include
     private String nome; //nome da tarefa
 
     @Column(name = "progresso")

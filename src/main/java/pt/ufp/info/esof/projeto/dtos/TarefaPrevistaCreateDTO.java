@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 public class TarefaPrevistaCreateDTO implements CreateDTO<TarefaPrevista> {
 
     private float tempoPrevisto; //tempo previsto para a realização da tarefa
-    private String Nome; //nome da tarefa
+    private String nome; //nome da tarefa
+    private Long projetoId; //id do projeto a que a tarefa pertence
+    private Long empregadoId; //id do empregado a que a tarefa pertence
     private List<TarefaEfetivaCreateDTO> tarefasEfetivas = new ArrayList<>(); //lista de tarefas efetivas
 
     @Override

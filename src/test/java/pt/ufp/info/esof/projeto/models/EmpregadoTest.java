@@ -35,7 +35,7 @@ class EmpregadoTest {
 
         assertEquals(0, empregado.getTarefasPrevistas().size()); //antes de adicionar a tarefa espera-se que a lista esteja vazia
 
-        empregado.adicionaTarefaP(tarefaPrevista); //adiciona a tarefa
+        empregado.adicionaTarefaPrevista(tarefaPrevista); //adiciona a tarefa
 
         assertEquals(1, empregado.getTarefasPrevistas().size()); //depois de adicionar espera-se que tenha lá uma tarefa
     }
@@ -49,10 +49,10 @@ class EmpregadoTest {
         TarefaPrevista tarefaPrevista = new TarefaPrevista(); //cria uma nova tarefa
         tarefaPrevista.setNome("Tarefa teste 4"); //nome da tarefa
 
-        empregado.adicionaTarefaP(tarefaPrevista); //adiciona a tarefa
+        empregado.adicionaTarefaPrevista(tarefaPrevista); //adiciona a tarefa
         assertEquals(1, empregado.getTarefasPrevistas().size()); //espera-se uma tarefa ao adicionar
 
-        empregado.removeTarefaP(tarefaPrevista); //remove a tarefa
+        empregado.removeTarefaPrevista(tarefaPrevista); //remove a tarefa
         assertEquals(0, empregado.getTarefasPrevistas().size()); //espera-se 0 tarefas ao remover
     }
 }

@@ -4,59 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import pt.ufp.info.esof.projeto.models.Cliente;
+import pt.ufp.info.esof.projeto.dtos.EmpregadoCreateDTO;
+import pt.ufp.info.esof.projeto.dtos.EmpregadoResponseDTO;
+import pt.ufp.info.esof.projeto.dtos.TarefaPrevistaCreateDTO;
+import pt.ufp.info.esof.projeto.dtos.conversores.ConverterEmpregadoParaDTO;
 import pt.ufp.info.esof.projeto.models.Empregado;
-import pt.ufp.info.esof.projeto.models.Projeto;
-import pt.ufp.info.esof.projeto.models.TarefaPrevista;
-import pt.ufp.info.esof.projeto.repositories.ClienteRepository;
-import pt.ufp.info.esof.projeto.repositories.EmpregadoRepository;
-
+import pt.ufp.info.esof.projeto.services.EmpregadoService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/empregado")
 public class EmpregadoController {
-    private final EmpregadoRepository empregadoRepository;
+    private final EmpregadoService empregadoService;
+    private final ConverterEmpregadoParaDTO converterEmpregadoParaDTO = new ConverterEmpregadoParaDTO();
 
     @Autowired
-    public EmpregadoController(EmpregadoRepository empregadoRepository) {
-        this.empregadoRepository = empregadoRepository;
+    public EmpregadoController(EmpregadoService empregadoService) {
+        this.empregadoService = empregadoService;
     }
 
     @GetMapping()
-    public ResponseEntity<Iterable<Empregado>> getAllEmpregado() {
-        return ResponseEntity.ok(empregadoRepository.findAll()); //retorna todos os empregados
+    public ResponseEntity<Iterable<EmpregadoResponseDTO>> getAllEmpregado() {
+        List<EmpregadoResponseDTO> responseDTOS = new ArrayList<>();
+        empregadoService.findAll().forEach(empregado -> responseDTOS.add(converterEmpregadoParaDTO.converter(empregado)));
+        return ResponseEntity.ok(responseDTOS);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Empregado> getEmpregadoById(@PathVariable Long id) {
-        Optional<Empregado> optionalEmpregado = empregadoRepository.findById(id);
-        return optionalEmpregado.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<EmpregadoResponseDTO> getEmpregadoById(@PathVariable Long id){
+        Optional<Empregado> optionalEmpregado = empregadoService.findById(id);
+        return optionalEmpregado.map(empregado -> {
+            EmpregadoResponseDTO empregadoResponseDTO = converterEmpregadoParaDTO.converter(empregado);
+            return ResponseEntity.ok(empregadoResponseDTO);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Empregado> criarEmpregado(@RequestBody Empregado empregado) {
-        Optional<Empregado> optionalEmpregado = empregadoRepository.findById(empregado.getId());
-        if (optionalEmpregado.isEmpty()) {
-            return ResponseEntity.ok(empregadoRepository.save(empregado));
-        }
-        return ResponseEntity.badRequest().build();
-
+    public ResponseEntity<EmpregadoResponseDTO> criarEmpregado(@RequestBody EmpregadoCreateDTO empregadoCreateDTO){
+        Optional<Empregado> optionalEmpregado = empregadoService.criarEmpregado(empregadoCreateDTO.converter());
+        return optionalEmpregado.map(value -> ResponseEntity.ok(converterEmpregadoParaDTO.converter(value))).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @PatchMapping("/{empregadoId}")
-    public ResponseEntity<Empregado> adicionaTarefaP(@PathVariable Long empregadoId, @RequestBody TarefaPrevista tarefaPrevista) {
-        Optional<Empregado> optionalEmpregado = this.empregadoRepository.findById(empregadoId);
-        if (optionalEmpregado.isPresent()) {
-            Empregado empregado = optionalEmpregado.get();
-            int quantidadeDeTarefaPAntes = empregado.getTarefasPrevistas().size();
-            empregado.adicionaTarefaP(tarefaPrevista);
-            int quantidadeDeTarefaPDepois = empregado.getTarefasPrevistas().size();
-            if (quantidadeDeTarefaPAntes != quantidadeDeTarefaPDepois) {
-                return ResponseEntity.ok(empregado);
-            }
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<EmpregadoResponseDTO> adicionaTarefaPrevista(@PathVariable Long empregadoId, @RequestBody TarefaPrevistaCreateDTO tarefaPrevista){
+        Optional<Empregado> optionalEmpregado = empregadoService.adicionaTarefaPrevista(empregadoId, tarefaPrevista.converter());
+        return optionalEmpregado.map(empregado -> ResponseEntity.ok(converterEmpregadoParaDTO.converter(empregado))).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 }
 

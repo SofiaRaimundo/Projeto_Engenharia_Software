@@ -1,5 +1,6 @@
 package pt.ufp.info.esof.projeto.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "empregado")
+@EqualsAndHashCode(callSuper = true)
 public class Empregado extends Pessoa {
 
   @Id
@@ -47,19 +49,21 @@ public class Empregado extends Pessoa {
    * Função que permite adiconar uma tarefa a um empregado.
    * @param tarefaPrevista - tarefa a ser adicionada.
    */
-  public void adicionaTarefaP(TarefaPrevista tarefaPrevista) {
+  public TarefaPrevista adicionaTarefaPrevista(TarefaPrevista tarefaPrevista) {
     //verifica se a tarefa ainda não existe na lista
     if(!this.tarefasPrevistas.contains(tarefaPrevista)) {
       this.tarefasPrevistas.add(tarefaPrevista); //adiciona a tarefa
       tarefaPrevista.setEmpregado(this); //associa o empregado à tarefa
+      return tarefaPrevista;
     }
+    return null;
   }
 
   /**
    * Função que permite remover uma tarefa de um empregado.
    * @param tarefaPrevista - tarefa a ser removida.
    */
-  public void removeTarefaP(TarefaPrevista tarefaPrevista) {
+  public void removeTarefaPrevista(TarefaPrevista tarefaPrevista) {
     //verifica se a tarefa existe na lista
     if(this.tarefasPrevistas.contains(tarefaPrevista)) {
       this.tarefasPrevistas.remove(tarefaPrevista); //remove a tarefa
